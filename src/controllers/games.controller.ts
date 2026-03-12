@@ -1,7 +1,7 @@
 import type { Request, Response } from "express"
-import { getPopularGames, getHeroGames } from "../services/rawg.service.js"
+import { getPopularGames, getHeroGames, getGameById, getGameScreenshots, getGameMovies } from "../services/rawg.service.js"
 
-export const getPopular = async (req: Request, res: Response) => {
+export const getPopularGamesC = async (req: Request, res: Response) => {
     try {
         const games = await getPopularGames()
         res.json(games)
@@ -11,12 +11,59 @@ export const getPopular = async (req: Request, res: Response) => {
     }
 }
 
-export const getHero = async (req: Request, res: Response) => {
+export const getHeroGamesC = async (req: Request, res: Response) => {
     try {
         const games = await getHeroGames()
         res.json(games)
     } catch (e) {
         console.error('Failed to fetch hero games: ', e)
         res.status(500).json({ message: "Failed to fetch hero games" })
+    }
+}
+
+export const getGameByIdC = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id as string
+        console.log("GAME ID: ", id)
+
+        const game = await getGameById(id)
+        res.json(game)
+    } catch (e) {
+        console.error("Failed to fetch game:", e)
+        res.status(500).json({ message: "Failed to fetch game" })
+    }
+
+
+}
+
+export const getGameScreenshotsC = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id
+
+        if (!id || Array.isArray(id)) {
+            return res.status(400).json({ message: "Invalid game id" })
+        }
+
+        const screenshots = await getGameScreenshots(id)
+        res.json(screenshots)
+    } catch (e) {
+        console.error("Failed to fetch screenshots:", e)
+        res.status(500).json({ message: "Failed to fetch screenshots" })
+    }
+}
+
+export const getGameMoviesC = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id
+
+        if (!id || Array.isArray(id)) {
+            return res.status(400).json({ message: "Invalid game id" })
+        }
+
+        const movies = await getGameMovies(id)
+        res.json(movies)
+    } catch (e) {
+        console.error("Failed to fetch game movies:", e)
+        res.status(500).json({ message: "Failed to fetch game movies" })
     }
 }
