@@ -1,8 +1,9 @@
 import { Router } from "express"
-import { getHeroGamesC, getPopularGamesC, getGameByIdC, getGameScreenshotsC, getGameMoviesC } from "../controllers/games.controller.js"
+import { getHeroGamesC, getPopularGamesC, getGameByIdC, getGameScreenshotsC, getGameMoviesC, searchGamesC } from "../controllers/games.controller.js"
 
 const router = Router()
 
+router.get("/games/search", searchGamesC)
 router.get("/games/popular", getPopularGamesC)
 router.get("/games/hero", getHeroGamesC)
 router.get("/games/:id", getGameByIdC)

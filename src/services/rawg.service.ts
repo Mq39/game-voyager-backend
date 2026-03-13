@@ -1,125 +1,211 @@
 import axios from "axios"
 
-export const getPopularGames = async () => {
-    const RAWG_KEY = process.env.RAWG_API_KEY
+const RAWG_BASE_URL = "https://api.rawg.io/api"
 
-    if (!RAWG_KEY) {
-        throw new Error("API_KEY is missing")
+const getRawgKey = (): string => {
+    const rawgKey = process.env.RAWG_API_KEY
+
+    if (!rawgKey) {
+        throw new Error("API_KEY_MISSING")
     }
 
-    const response = await axios.get("https://api.rawg.io/api/games", {
+    return rawgKey
+}
+
+interface RawgGameListItem {
+    id: number
+    name: string
+    background_image: string | null
+    rating: number
+    released: string | null
+}
+
+interface RawgGamesResponse {
+    results: RawgGameListItem[]
+}
+
+interface RawgGenre {
+    name: string
+}
+
+interface RawgTag {
+    name: string
+}
+
+interface RawgPlatform {
+    platform: {
+        name: string
+        slug: string
+    }
+    requirements_en?: string | null
+}
+
+interface RawgGameDetailsResponse {
+    id: number
+    name: string
+    description_raw: string | null
+    released: string | null
+    rating: number
+    background_image: string | null
+    website: string | null
+    genres?: RawgGenre[]
+    platforms?: RawgPlatform[]
+    metacritic: number | null
+    tags?: RawgTag[]
+}
+
+interface RawgScreenshot {
+    id: number
+    image: string
+}
+
+interface RawgScreenshotsResponse {
+    results: RawgScreenshot[]
+}
+
+interface RawgMovie {
+    id: number
+    name: string
+    preview: string
+    data?: {
+        "480"?: string
+        max?: string
+    }
+}
+
+interface RawgMoviesResponse {
+    results: RawgMovie[]
+}
+
+export const getPopularGames = async () => {
+    const rawgKey = getRawgKey()
+
+    const response = await axios.get<RawgGamesResponse>(`${RAWG_BASE_URL}/games`, {
         params: {
-            key: RAWG_KEY,
+            key: rawgKey,
             page_size: 20,
             ordering: "-added"
         }
     })
 
-    return response.data.results.map((game: any, index: number) => ({
+    return response.data.results.map((game, index) => ({
         id: game.id,
         title: game.name,
         rating: game.rating,
-        released: game.released,
-        image: game.background_image,
+        released: game.released ?? undefined,
+        image: game.background_image ?? "",
         rank: index + 1
     }))
 }
 
 export const getHeroGames = async () => {
-    const RAWG_KEY = process.env.RAWG_API_KEY
+    const rawgKey = getRawgKey()
 
-    if (!RAWG_KEY) {
-        throw new Error('API_KEY_MISSING')
-    }
-
-    const response = await axios.get("https://api.rawg.io/api/games", {
+    const response = await axios.get<RawgGamesResponse>(`${RAWG_BASE_URL}/games`, {
         params: {
-            key: RAWG_KEY,
+            key: rawgKey,
             page_size: 3,
             ordering: "-added"
         }
     })
 
-    return response.data.results.map((game: any) => ({
+    return response.data.results.map((game) => ({
         id: game.id,
         title: game.name,
-        image: game.background_image
+        image: game.background_image ?? ""
+    }))
+}
+
+export const searchGames = async (query: string, pageSize = 6) => {
+    const rawgKey = getRawgKey()
+
+    if (!query.trim()) {
+        return []
+    }
+
+    const response = await axios.get<RawgGamesResponse>(`${RAWG_BASE_URL}/games`, {
+        params: {
+            key: rawgKey,
+            search: query,
+            page_size: pageSize
+        }
+    })
+
+    return response.data.results.map((game) => ({
+        id: game.id,
+        title: game.name,
+        image: game.background_image ?? "",
+        released: game.released ?? undefined
     }))
 }
 
 export const getGameById = async (id: string) => {
-    const RAWG_KEY = process.env.RAWG_API_KEY
+    const rawgKey = getRawgKey()
 
-    if (!RAWG_KEY) {
-        throw new Error("API_KEY_MISSING")
-    }
-
-    const response = await axios.get(`https://api.rawg.io/api/games/${id}`, {
-        params: {
-            key: RAWG_KEY
+    const response = await axios.get<RawgGameDetailsResponse>(
+        `${RAWG_BASE_URL}/games/${id}`,
+        {
+            params: {
+                key: rawgKey
+            }
         }
-    })
+    )
 
     const game = response.data
 
     const pcPlatform = game.platforms?.find(
-        (p: any) => p.platform.slug === "pc"
+        (platform) => platform.platform.slug === "pc"
     )
 
     return {
         id: game.id,
         title: game.name,
-        description: game.description_raw,
-        released: game.released,
+        description: game.description_raw ?? "",
+        released: game.released ?? undefined,
         rating: game.rating,
-        background: game.background_image,
-        website: game.website,
-        genres: game.genres?.map((g: any) => g.name),
-        platforms: game.platforms?.map((p: any) => p.platform.name),
-        requirements: pcPlatform?.requirements_en || null,
-        metacritic: game.metacritic,
-        tags: game.tags?.slice(0, 6).map((t: any) => t.name)
+        background: game.background_image ?? "",
+        website: game.website ?? "",
+        genres: game.genres?.map((genre) => genre.name) ?? [],
+        platforms: game.platforms?.map((platform) => platform.platform.name) ?? [],
+        requirements: pcPlatform?.requirements_en ?? null,
+        metacritic: game.metacritic ?? null,
+        tags: game.tags?.slice(0, 6).map((tag) => tag.name) ?? []
     }
 }
 
 export const getGameScreenshots = async (id: string) => {
-    const RAWG_KEY = process.env.RAWG_API_KEY
+    const rawgKey = getRawgKey()
 
-    if (!RAWG_KEY) {
-        throw new Error("API_KEY_MISSING")
-    }
-
-    const response = await axios.get(
-        `https://api.rawg.io/api/games/${id}/screenshots`,
+    const response = await axios.get<RawgScreenshotsResponse>(
+        `${RAWG_BASE_URL}/games/${id}/screenshots`,
         {
-            params: { key: RAWG_KEY }
+            params: { key: rawgKey }
         }
     )
 
-    return response.data.results.map((screenshot: any) => ({
+    return response.data.results.map((screenshot) => ({
         id: screenshot.id,
         image: screenshot.image
     }))
 }
 
 export const getGameMovies = async (id: string) => {
-    const RAWG_KEY = process.env.RAWG_API_KEY
+    const rawgKey = getRawgKey()
 
-    if (!RAWG_KEY) {
-        throw new Error("API_KEY_MISSING")
-    }
-
-    const response = await axios.get(`https://api.rawg.io/api/games/${id}/movies`, {
-        params: {
-            key: RAWG_KEY
+    const response = await axios.get<RawgMoviesResponse>(
+        `${RAWG_BASE_URL}/games/${id}/movies`,
+        {
+            params: {
+                key: rawgKey
+            }
         }
-    })
+    )
 
-    return response.data.results.map((movie: any) => ({
+    return response.data.results.map((movie) => ({
         id: movie.id,
         name: movie.name,
         preview: movie.preview,
-        video480: movie.data?.["480"],
-        videoMax: movie.data?.max
+        video480: movie.data?.["480"] ?? null,
+        videoMax: movie.data?.max ?? null
     }))
 }

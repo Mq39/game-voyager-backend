@@ -1,5 +1,5 @@
 import type { Request, Response } from "express"
-import { getPopularGames, getHeroGames, getGameById, getGameScreenshots, getGameMovies } from "../services/rawg.service.js"
+import { getPopularGames, getHeroGames, getGameById, getGameScreenshots, getGameMovies, searchGames } from "../services/rawg.service.js"
 
 export const getPopularGamesC = async (req: Request, res: Response) => {
     try {
@@ -65,5 +65,22 @@ export const getGameMoviesC = async (req: Request, res: Response) => {
     } catch (e) {
         console.error("Failed to fetch game movies:", e)
         res.status(500).json({ message: "Failed to fetch game movies" })
+    }
+}
+
+export const searchGamesC = async (req: Request, res: Response) => {
+    try {
+        const query = String(req.query.query || "").trim()
+        const pageSize = Number(req.query.pageSize || 6)
+
+        if (!query) {
+            return res.json([])
+        }
+
+        const games = await searchGames(query, pageSize)
+        res.json(games)
+    } catch (e) {
+        console.error("Failed to search games:", e)
+        res.status(500).json({ message: "Failed to search games" })
     }
 }
