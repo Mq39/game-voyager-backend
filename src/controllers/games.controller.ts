@@ -1,5 +1,5 @@
 import type { Request, Response } from "express"
-import { getPopularGames, getHeroGames, getGameById, getGameScreenshots, getGameMovies, searchGames } from "../services/rawg.service.js"
+import { getPopularGames, getHeroGames, getGameById, getGameScreenshots, getGameMovies, searchGames, browseGames, type BrowseGamesOptions } from "../services/rawg.service.js"
 
 export const getPopularGamesC = async (req: Request, res: Response) => {
     try {
@@ -82,5 +82,48 @@ export const searchGamesC = async (req: Request, res: Response) => {
     } catch (e) {
         console.error("Failed to search games:", e)
         res.status(500).json({ message: "Failed to search games" })
+    }
+}
+
+export const browseGamesC = async (req: Request, res: Response) => {
+    try {
+        const search = typeof req.query.search === "string" ? req.query.search : undefined
+        const genres = typeof req.query.genre === "string" ? req.query.genre : undefined
+        const platforms = typeof req.query.platform === "string" ? req.query.platform : undefined
+        const ordering = typeof req.query.ordering === "string" ? req.query.ordering : undefined
+
+        const rawPage = Number(req.query.page)
+        const rawPageSize = Number(req.query.pageSize)
+
+        const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1
+        const pageSize = Number.isFinite(rawPageSize) && rawPageSize > 0 ? rawPageSize : 20
+
+        const options: BrowseGamesOptions = {
+            page,
+            pageSize
+        }
+
+        if (search) {
+            options.search = search
+        }
+
+        if (genres) {
+            options.genres = genres
+        }
+
+        if (platforms) {
+            options.platforms = platforms
+        }
+
+        if (ordering) {
+            options.ordering = ordering
+        }
+
+        const games = await browseGames(options)
+
+        res.json(games)
+    } catch (e) {
+        console.error("Failed to browse games:", e)
+        res.status(500).json({ message: "Failed to browse games" })
     }
 }

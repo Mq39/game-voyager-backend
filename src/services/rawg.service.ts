@@ -21,6 +21,9 @@ interface RawgGameListItem {
 }
 
 interface RawgGamesResponse {
+    count: number
+    next: string | null
+    previous: string | null
     results: RawgGameListItem[]
 }
 
@@ -75,6 +78,15 @@ interface RawgMovie {
 
 interface RawgMoviesResponse {
     results: RawgMovie[]
+}
+
+export interface BrowseGamesOptions {
+    search?: string
+    genres?: string
+    platforms?: string
+    ordering?: string
+    page?: number
+    pageSize?: number
 }
 
 export const getPopularGames = async () => {
@@ -208,4 +220,38 @@ export const getGameMovies = async (id: string) => {
         video480: movie.data?.["480"] ?? null,
         videoMax: movie.data?.max ?? null
     }))
+}
+
+export const browseGames = async ({
+    search,
+    genres,
+    platforms,
+    ordering,
+    page = 1,
+    pageSize = 20
+}: BrowseGamesOptions) => {
+    const rawgKey = getRawgKey()
+
+    const response = await axios.get<RawgGamesResponse>(`${RAWG_BASE_URL}/games`, {
+        params: {
+            key: rawgKey,
+            search: search || undefined,
+            genres: genres || undefined,
+            platforms: platforms || undefined,
+            ordering: ordering || undefined,
+            page,
+            page_size: pageSize
+        }
+    })
+
+    return {
+        count: response.data.count,
+        results: response.data.results.map((game) => ({
+            id: game.id,
+            title: game.name,
+            image: game.background_image ?? "",
+            rating: game.rating,
+            released: game.released ?? undefined
+        }))
+    }
 }
