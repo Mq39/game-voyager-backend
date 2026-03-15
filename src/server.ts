@@ -27,6 +27,6 @@ app.use("/api/auth", authenticationRoutes)
 app.use("/api/cart", cartRoutes)
 app.use("/api/wishlist", wishlistRoutes)
 
-// app.listen(PORT, () => {
-//     console.log(`🚀 Server running on http://localhost:${PORT}`)
-// })
+app.listen(PORT, () => {
+    console.log(`Server is running on port`)
+})
