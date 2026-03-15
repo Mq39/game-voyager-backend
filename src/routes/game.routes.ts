@@ -1,5 +1,13 @@
 import { Router } from "express"
-import { getHeroGamesC, getPopularGamesC, getGameByIdC, getGameScreenshotsC, getGameMoviesC, searchGamesC, browseGamesC } from "../controllers/games.controller.js"
+import {
+    getHeroGamesC,
+    getPopularGamesC,
+    getGameByIdC,
+    getGameScreenshotsC,
+    getGameMoviesC,
+    searchGamesC,
+    browseGamesC
+} from "../controllers/games.controller.js"
 
 const router = Router()
 

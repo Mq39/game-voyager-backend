@@ -100,15 +100,21 @@ export const getPopularGames = async () => {
         }
     })
 
-    return response.data.results.map((game, index) => ({
-        id: game.id,
-        title: game.name,
-        rating: game.rating,
-        released: game.released ?? undefined,
-        image: game.background_image ?? "",
-        rank: index + 1
-    }))
+
+
+    return response.data.results.map((game, index) => {
+
+        return {
+            id: game.id,
+            title: game.name,
+            rating: game.rating,
+            released: game.released ?? undefined,
+            image: game.background_image ?? "",
+            rank: index + 1,
+        }
+    })
 }
+
 
 export const getHeroGames = async () => {
     const rawgKey = getRawgKey()
@@ -143,12 +149,15 @@ export const searchGames = async (query: string, pageSize = 6) => {
         }
     })
 
-    return response.data.results.map((game) => ({
-        id: game.id,
-        title: game.name,
-        image: game.background_image ?? "",
-        released: game.released ?? undefined
-    }))
+    return response.data.results.map((game) => {
+
+        return {
+            id: game.id,
+            title: game.name,
+            image: game.background_image ?? "",
+            released: game.released ?? undefined,
+        }
+    })
 }
 
 export const getGameById = async (id: string) => {
@@ -181,7 +190,7 @@ export const getGameById = async (id: string) => {
         platforms: game.platforms?.map((platform) => platform.platform.name) ?? [],
         requirements: pcPlatform?.requirements_en ?? null,
         metacritic: game.metacritic ?? null,
-        tags: game.tags?.slice(0, 6).map((tag) => tag.name) ?? []
+        tags: game.tags?.slice(0, 6).map((tag) => tag.name) ?? [],
     }
 }
 
@@ -246,12 +255,15 @@ export const browseGames = async ({
 
     return {
         count: response.data.count,
-        results: response.data.results.map((game) => ({
-            id: game.id,
-            title: game.name,
-            image: game.background_image ?? "",
-            rating: game.rating,
-            released: game.released ?? undefined
-        }))
+        results: response.data.results.map((game) => {
+
+            return {
+                id: game.id,
+                title: game.name,
+                image: game.background_image ?? "",
+                rating: game.rating,
+                released: game.released ?? undefined,
+            }
+        })
     }
 }

@@ -1,5 +1,14 @@
 import type { Request, Response } from "express"
-import { getPopularGames, getHeroGames, getGameById, getGameScreenshots, getGameMovies, searchGames, browseGames, type BrowseGamesOptions } from "../services/rawg.service.js"
+import {
+    getPopularGames,
+    getHeroGames,
+    getGameById,
+    getGameScreenshots,
+    getGameMovies,
+    searchGames,
+    browseGames,
+    type BrowseGamesOptions
+} from "../services/rawg.service.js"
 
 export const getPopularGamesC = async (req: Request, res: Response) => {
     try {
