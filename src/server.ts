@@ -13,8 +13,6 @@ const app = express()
 const PORT = process.env.PORT || 4000
 const RAWG_KEY = process.env.RAWG_API_KEY
 
-
-
 app.use(cors())
 app.use(morgan("dev"))
 app.use(express.json())
@@ -24,13 +22,11 @@ app.get("/api/health", (req, res) => {
 })
 
 
-
 app.use("/api", gameRoutes)
 app.use("/api/auth", authenticationRoutes)
 app.use("/api/cart", cartRoutes)
 app.use("/api/wishlist", wishlistRoutes)
 
-
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`)
-})
+// app.listen(PORT, () => {
+//     console.log(`🚀 Server running on http://localhost:${PORT}`)
+// })
