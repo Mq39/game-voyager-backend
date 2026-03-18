@@ -4,7 +4,8 @@ import morgan from "morgan"
 import dotenv from "dotenv"
 import swaggerUi from "swagger-ui-express"
 import YAML from "yamljs"
-
+import path from "path"
+import { fileURLToPath } from "url"
 
 import gameRoutes from "./routes/game.routes.js"
 import authenticationRoutes from "./routes/authentication.routes.js"
@@ -14,7 +15,13 @@ import wishlistRoutes from "./routes/wishlist.routes.js"
 dotenv.config()
 
 const app = express()
-const swaggerDocument = YAML.load("openapi.yaml")
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+const swaggerDocument = YAML.load(
+    path.join(__dirname, "../openapi.yaml")
+)
 
 app.use(cors({
     origin: [
@@ -23,6 +30,7 @@ app.use(cors({
     ],
     credentials: true
 }))
+
 app.use(morgan("dev"))
 app.use(express.json())
 
