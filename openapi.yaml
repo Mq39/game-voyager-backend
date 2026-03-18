@@ -1,0 +1,162 @@
+openapi: 3.0.3
+info:
+  title: GameVoyager API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:4000/api
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+  schemas:
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+paths:
+
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: OK
+
+  /auth/register:
+    post:
+      summary: Register
+      requestBody:
+        required: true
+      responses:
+        '201':
+          description: Created
+
+  /auth/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+      responses:
+        '200':
+          description: OK
+
+  /games/hero:
+    get:
+      summary: Hero games
+      responses:
+        '200':
+          description: OK
+
+  /games/popular:
+    get:
+      summary: Popular games
+      responses:
+        '200':
+          description: OK
+
+  /games/search:
+    get:
+      summary: Search games
+      responses:
+        '200':
+          description: OK
+
+  /games/browse:
+    get:
+      summary: Browse games
+      responses:
+        '200':
+          description: OK
+
+  /games/{id}:
+    get:
+      summary: Game details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+
+  /games/{id}/screenshots:
+    get:
+      summary: Game screenshots
+      responses:
+        '200':
+          description: OK
+
+  /games/{id}/movies:
+    get:
+      summary: Game movies
+      responses:
+        '200':
+          description: OK
+
+  /cart:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Get cart
+      responses:
+        '200':
+          description: OK
+
+    post:
+      security:
+        - bearerAuth: []
+      summary: Add to cart
+      responses:
+        '201':
+          description: Created
+
+  /cart/{gameId}:
+    patch:
+      security:
+        - bearerAuth: []
+      summary: Update cart
+      responses:
+        '200':
+          description: OK
+
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Remove from cart
+      responses:
+        '200':
+          description: OK
+
+  /wishlist:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Get wishlist
+      responses:
+        '200':
+          description: OK
+
+    post:
+      security:
+        - bearerAuth: []
+      summary: Add to wishlist
+      responses:
+        '201':
+          description: Created
+
+  /wishlist/{gameId}:
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Remove from wishlist
+      responses:
+        '200':
+          description: OK
