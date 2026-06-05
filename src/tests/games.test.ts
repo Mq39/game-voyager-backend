@@ -1,3 +1,7 @@
+/**
+ * T-GAME-2: GET /games/search bez query parametra vraća prazan niz.
+ */
+
 import request from "supertest"
 import { describe, it, expect } from "vitest"
 import app from "../server.js"

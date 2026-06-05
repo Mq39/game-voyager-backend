@@ -1,3 +1,7 @@
+/**
+ * T-CART-7: Bez tokena svi cart endpoint-i vraćaju 401.
+ */
+
 import request from "supertest"
 import { describe, it, expect } from "vitest"
 import app from "../server.js"
