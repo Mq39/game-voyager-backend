@@ -1,3 +1,39 @@
+/**
+ * games.controller.ts
+ * ----------------------------------------------------------------
+ * Modul: Upravljanje igrama
+ * Projekat: GameVoyager
+ * Autori: Predrag Mitrović, Ana Stančić
+ *
+ * Opis:
+ * Implementira HTTP kontrolere za rad sa igrama.
+ * Kontroleri predstavljaju sloj između Express ruta i
+ * servisnog sloja koji komunicira sa RAWG API servisom
+ * i lokalnim cache mehanizmom.
+ *
+ * Funkcionalnosti:
+ * - Prikaz popularnih igara
+ * - Prikaz hero sekcije
+ * - Pretraga igara
+ * - Pregled kataloga sa filterima
+ * - Detalji pojedinačne igre
+ * - Snimci ekrana igre
+ * - Video materijali za igru
+ *
+ * Zavisnosti:
+ * - express
+ * - rawg.service.ts
+ *
+ * Endpoint-i:
+ * GET /api/games/popular
+ * GET /api/games/hero
+ * GET /api/games/search
+ * GET /api/games/browse
+ * GET /api/games/:id
+ * GET /api/games/:id/screenshots
+ * GET /api/games/:id/movies
+ */
+
 import type { Request, Response } from "express"
 import {
     getPopularGames,
@@ -10,6 +46,9 @@ import {
     type BrowseGamesOptions
 } from "../services/rawg.service.js"
 
+/**
+ * Vraća listu popularnih igara za početnu stranu aplikacije.
+ */
 export const getPopularGamesC = async (req: Request, res: Response) => {
     try {
         const games = await getPopularGames()
@@ -20,6 +59,9 @@ export const getPopularGamesC = async (req: Request, res: Response) => {
     }
 }
 
+/**
+ * Vraća igre prikazane u hero sekciji početne strane.
+ */
 export const getHeroGamesC = async (req: Request, res: Response) => {
     try {
         const games = await getHeroGames()
@@ -30,6 +72,9 @@ export const getHeroGamesC = async (req: Request, res: Response) => {
     }
 }
 
+/**
+ * Vraća detaljne informacije o jednoj igri na osnovu ID-a.
+ */
 export const getGameByIdC = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string
@@ -45,6 +90,9 @@ export const getGameByIdC = async (req: Request, res: Response) => {
 
 }
 
+/**
+ * Vraća listu slika vezanih za izabranu igru.
+ */
 export const getGameScreenshotsC = async (req: Request, res: Response) => {
     try {
         const id = req.params.id
@@ -61,6 +109,9 @@ export const getGameScreenshotsC = async (req: Request, res: Response) => {
     }
 }
 
+/**
+ * Vraća video materijale i trejlere za izabranu igru.
+ */
 export const getGameMoviesC = async (req: Request, res: Response) => {
     try {
         const id = req.params.id
@@ -77,6 +128,11 @@ export const getGameMoviesC = async (req: Request, res: Response) => {
     }
 }
 
+
+/**
+ * Pretražuje igre na osnovu korisničkog upita.
+ * Rezultat je ograničen parametrom pageSize.
+ */
 export const searchGamesC = async (req: Request, res: Response) => {
     try {
         const query = String(req.query.query || "").trim()
@@ -94,6 +150,14 @@ export const searchGamesC = async (req: Request, res: Response) => {
     }
 }
 
+/**
+ * Vraća katalog igara uz podršku za:
+ * - pretragu
+ * - filtriranje po žanru
+ * - filtriranje po platformi
+ * - sortiranje
+ * - paginaciju
+ */
 export const browseGamesC = async (req: Request, res: Response) => {
     try {
         const search = typeof req.query.search === "string" ? req.query.search : undefined
