@@ -10,5 +10,18 @@ export const db = mysql.createPool({
     password: process.env.DB_PASSWORD || "",
     database: process.env.DB_NAME || "game_voyager",
     waitForConnections: true,
-    connectionLimit: 10
+    connectionLimit: 10,
+
+    ssl: {
+        rejectUnauthorized: false
+    }
 })
+
+db.getConnection()
+    .then((connection) => {
+        console.log("DATABASE CONNECTED")
+        connection.release()
+    })
+    .catch((error) => {
+        console.error("DATABASE ERROR:", error)
+    })
